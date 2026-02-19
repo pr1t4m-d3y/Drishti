@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+@theme {
+  --color-oxford-blue: #001C38;
+  --color-sky-blue: #00AEEF;
+  --color-slate-grey: #4A5C6D;
+  --color-page-bg: #F4F7FA;
+  --color-card-bg: #FFFFFF;
+  --color-risk-critical: #D32F2F;
+  --color-risk-warning: #FFA000;
+  --color-risk-safe: #388E3C;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-page-bg text-slate-grey font-sans antialiased;
+    margin: 0;
+    min-height: 100vh;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-oxford-blue font-semibold;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-card-bg rounded-xl;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
+  }
+  .glass {
+    @apply bg-white/80 backdrop-blur-md border border-white/20 rounded-xl;
+  }
+  .risk-badge {
+    @apply px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide;
+  }
+  .risk-badge-critical {
+    @apply bg-risk-critical/10 text-risk-critical;
+  }
+  .risk-badge-high {
+    @apply bg-risk-critical/10 text-risk-critical;
+  }
+  .risk-badge-medium {
+    @apply bg-risk-warning/10 text-risk-warning;
+  }
+  .risk-badge-safe {
+    @apply bg-risk-safe/10 text-risk-safe;
+  }
+}
