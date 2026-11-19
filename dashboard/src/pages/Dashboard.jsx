@@ -17,7 +17,7 @@ export default function Dashboard() {
     const [search, setSearch] = useState('');
     const [riskFilter, setRiskFilter] = useState(null);
     const [activeFilter, setActiveFilter] = useState(null);
-    const [selectedCustomer, setSelectedCustomer] = useState('');
+    const [selectedCustomer] = useState('');
     const [loading, setLoading] = useState(true);
 
     const loadData = useCallback(async () => {

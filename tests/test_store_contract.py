@@ -84,7 +84,8 @@ def test_postgres_migrations_apply_once_and_readonly_role_is_locked_down():
         ro = psycopg.connect(f"postgresql://drishti_ro:ro_test_pw@{host}", autocommit=True)
         assert ro.execute("SELECT risk_segment FROM customers WHERE customer_id=1").fetchone()[0] == "LOW"
         for bad in ("SELECT default_label FROM customers", "DELETE FROM customers", "SELECT * FROM api_keys"):
-            with pytest.raises(psycopg.errors.InsufficientPrivilege):
+            # Blocked either by missing privilege or, for writes, by the role's read-only default.
+            with pytest.raises((psycopg.errors.InsufficientPrivilege, psycopg.errors.ReadOnlySqlTransaction)):
                 ro.execute(bad)
         with pytest.raises(psycopg.errors.CheckViolation), psycopg.connect(dsn, autocommit=True) as c:
             c.execute("INSERT INTO interventions (customer_id, action_type, rationale, proposed_by, decided_by) VALUES (1,'NO_ACTION','x','a','a')")
