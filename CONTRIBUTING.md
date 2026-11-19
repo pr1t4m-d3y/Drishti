@@ -1,5 +1,7 @@
 # Working on Drishti together
 
+Current status and pending items: [docs/STATUS.md](docs/STATUS.md).
+
 ## Split of work
 
 | Area | Owner | Where |
