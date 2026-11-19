@@ -76,3 +76,6 @@ logs/
 # ---------- AI tooling / local-only ----------
 .claude/
 New_Server/
+
+# models imported from notebooks are tracked; trained artifacts are not
+!models/incoming/
