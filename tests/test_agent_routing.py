@@ -88,3 +88,26 @@ async def test_baseline_variant_is_single_flat_agent():
     assert {"get_customer", "search_policies", "propose_intervention"} <= names
     assert not s.use_verifier
     build_system("final")  # restore retrieval mode
+
+
+async def test_llm_verifier_can_veto_an_answer(monkeypatch):
+    from drishti.config import get_settings
+
+    monkeypatch.setenv("LLM_VERIFIER", "true")
+    get_settings.cache_clear()
+
+    def scripted(names, last, resp):
+        if "risk_data_agent" in names or "top_risk_customers" in names:
+            return script(names, last, resp)
+        return [text('{"grounded": false, "unsupported_claims": ["probability not in evidence"], "notes": ""}')]
+
+    sysmod.set_model_override(FakeLlm(script=scripted))
+    try:
+        svc = ChatService(build_system("final"), session_service=InMemorySessionService())
+        final, _ = await run(svc, "Which 3 customers are most at risk?")
+        assert final["grounded"] is False
+        assert any("LLM verifier" in i for i in final["verifier_issues"])
+    finally:
+        sysmod.set_model_override(None)
+        monkeypatch.delenv("LLM_VERIFIER")
+        get_settings.cache_clear()

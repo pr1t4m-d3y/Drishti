@@ -5,7 +5,9 @@ from __future__ import annotations
 from functools import lru_cache
 from pathlib import Path
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from sqlalchemy.engine import make_url
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -29,11 +31,23 @@ class Settings(BaseSettings):
     trace_exporter: str = "console"  # console | otlp | gcp | none
     api_key_pepper: str = "change-me"
     rate_limit: str = "30/minute"
+    llm_verifier: bool = False  # extra LLM groundedness check on top of the deterministic verifier
 
     # Risk segment cut-offs on calibrated default probability.
     seg_critical: float = 0.60
     seg_high: float = 0.40
     seg_medium: float = 0.25
+
+    db_password: str | None = None  # injected from Secret Manager; keeps passwords out of DSN env vars
+
+    @model_validator(mode="after")
+    def _inject_db_password(self) -> Settings:
+        if self.db_password:
+            for field in ("database_url", "session_db_url", "readonly_database_url"):
+                url = getattr(self, field)
+                if url and url.startswith("postgresql"):
+                    setattr(self, field, make_url(url).set(password=self.db_password).render_as_string(hide_password=False))
+        return self
 
     model_path: Path = ROOT / "models" / "risk_model.joblib"
     metrics_path: Path = ROOT / "models" / "metrics.json"

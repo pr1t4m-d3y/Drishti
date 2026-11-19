@@ -11,6 +11,7 @@ import pandas as pd
 from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, StreamingResponse
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from slowapi import Limiter
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
@@ -61,6 +62,7 @@ async def lifespan(_: FastAPI):
 
 app = FastAPI(title="Drishti", version="0.2.0", lifespan=lifespan)
 app.state.limiter = limiter
+FastAPIInstrumentor.instrument_app(app, excluded_urls="health")
 
 
 def _err(status: int, code: str, message: str) -> JSONResponse:

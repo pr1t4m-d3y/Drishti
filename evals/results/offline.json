@@ -1,0 +1,40 @@
+{
+  "generated_at": "2026-11-19T06:29:25+00:00",
+  "questions_total": 59,
+  "retrieval": {
+    "vector": {
+      "scored": 0,
+      "recall_at_k": null,
+      "mrr": null,
+      "k": 5,
+      "note": "policy corpus is empty"
+    },
+    "hybrid": {
+      "scored": 0,
+      "recall_at_k": null,
+      "mrr": null,
+      "k": 5,
+      "note": "policy corpus is empty"
+    },
+    "rerank": {
+      "scored": 0,
+      "recall_at_k": null,
+      "mrr": null,
+      "k": 5,
+      "note": "policy corpus is empty"
+    }
+  },
+  "guardrails": {
+    "attacks": 13,
+    "blocked_before_llm": 12,
+    "block_rate": 0.9231,
+    "passed_to_llm": [
+      "saf-13"
+    ]
+  },
+  "oracle": {
+    "oracles_ok": 17,
+    "oracles_failed": []
+  },
+  "embedder": "hash-v1"
+}

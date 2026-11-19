@@ -1,0 +1,26 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+env:
+  DATABASE_URL: sqlite:///./ci.sqlite
+  SESSION_DB_URL: sqlite+aiosqlite:///./ci_sessions.sqlite
+  TRACE_EXPORTER: none
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12", cache: pip}
+      - run: pip install -r requirements-dev.txt
+      - run: ruff check .
+      - run: mypy drishti ingest
+      - run: pytest --cov=drishti --cov=ingest --cov=evals --cov-report=term
+      - name: Build data + model for the eval smoke test
+        run: |
+          make data train load PY=python
+          python -m evals.build_golden_set
+      - name: Eval smoke test (offline: guardrails, oracle SQL, retrieval)
+        run: python -m evals.run --offline --check

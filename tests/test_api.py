@@ -89,3 +89,10 @@ def test_blocked_chat_is_refused_without_calling_llm(client, key):
     assert r.status_code == 200
     j = r.json()
     assert j["refused"] and j["trace_id"] and j["metrics"]["guardrail"] == "jailbreak"
+
+
+def test_db_password_is_injected_into_postgres_urls(monkeypatch):
+    from drishti.config import Settings
+
+    s = Settings(database_url="postgresql+psycopg://u@/d?host=/cloudsql/x", db_password="p@ss/w", session_db_url="sqlite+aiosqlite:///x")
+    assert ":p%40ss%2Fw@" in s.database_url and s.session_db_url.startswith("sqlite")

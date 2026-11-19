@@ -17,7 +17,7 @@ from google.genai import types
 
 from drishti.agents.guardrails import REFUSALS, check_user_input
 from drishti.agents.system import System, build_system
-from drishti.agents.verifier import Evidence, finalize, verify
+from drishti.agents.verifier import Evidence, finalize, llm_verify, verify
 from drishti.config import get_settings
 from drishti.db.models import RequestMetric
 from drishti.db.session import session_scope
@@ -91,6 +91,11 @@ class ChatService:
 
             if self.system.use_verifier:
                 result = verify(final_text, evidence)
+                if get_settings().llm_verifier and final_text:
+                    second = await llm_verify(final_text, evidence)
+                    if second is not None and not second.grounded:
+                        result.grounded = False
+                        result.issues.append("LLM verifier: " + "; ".join(second.unsupported_claims[:3] or [second.notes]))
                 answer = finalize(result, strict=self.strict)
                 issues, citations, grounded = result.issues, result.citations, result.grounded
             else:  # baseline: no verifier, only PII masking

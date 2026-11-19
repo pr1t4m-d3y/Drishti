@@ -79,10 +79,16 @@ def verify(answer: str, evidence: Evidence) -> VerificationResult:
     return VerificationResult(mask_output(answer), not issues, issues, citations)
 
 
+def _judge_model():  # noqa: ANN202
+    from drishti.agents import system
+
+    return system._MODEL_OVERRIDE or get_settings().judge_model
+
+
 def build_verifier_agent() -> Agent:
     return Agent(
         name="verifier_agent",
-        model=get_settings().judge_model,
+        model=_judge_model(),
         description="Checks that an answer is supported by the supplied evidence.",
         instruction=(
             "You audit an assistant's answer. You are given ANSWER and EVIDENCE (tool outputs and policy "
@@ -105,3 +111,24 @@ def finalize(result: VerificationResult, strict: bool = True) -> str:
     if result.grounded or not strict:
         return result.answer
     return SAFE_FALLBACK + "; ".join(result.issues[:3])
+
+
+async def llm_verify(answer: str, evidence: Evidence) -> LlmVerdict | None:
+    """Second-opinion groundedness check by a separate LLM agent. Returns None if it cannot parse."""
+    from google.adk.runners import InMemoryRunner
+    from google.genai import types
+
+    runner = InMemoryRunner(agent=build_verifier_agent(), app_name="drishti_verifier")
+    session = await runner.session_service.create_session(app_name="drishti_verifier", user_id="verifier")
+    payload = f"ANSWER:\n{answer}\n\nEVIDENCE:\n{evidence.tool_json[:8000]}"
+    out = ""
+    async for ev in runner.run_async(
+        user_id="verifier", session_id=session.id,
+        new_message=types.Content(role="user", parts=[types.Part(text=payload)]),
+    ):
+        if ev.is_final_response() and ev.content:
+            out = "".join(p.text or "" for p in (ev.content.parts or []) if p.text)
+    try:
+        return LlmVerdict.model_validate_json(out)
+    except ValueError:
+        return None
