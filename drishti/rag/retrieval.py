@@ -51,7 +51,7 @@ class Reranker(Protocol):
 class LexicalReranker:
     """Cheap, deterministic reranker: query-term coverage + bigram overlap + heading match.
 
-    Stand-in that runs offline. In the cloud, swap for `GeminiReranker` (LLM scoring) or the
+    Deterministic reranker that needs no external service. In the cloud, swap for `GeminiReranker` (LLM scoring) or the
     Vertex AI Ranking API; the interface is identical.
     """
 

@@ -44,7 +44,7 @@ _MODEL_OVERRIDE: object | None = None
 
 
 def set_model_override(model: object | None) -> None:
-    """Tests inject a scripted fake LLM here; production leaves it None."""
+    """Use a specific model object instead of the configured LLM_MODEL. None (the default) uses LLM_MODEL."""
     global _MODEL_OVERRIDE
     _MODEL_OVERRIDE = model
 

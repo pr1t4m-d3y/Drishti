@@ -6,7 +6,7 @@ Design rules (so the set can be defended):
 * SQL questions carry an `oracle_sql`: the expected value is computed from the real database at
   eval time, so references can never drift from the data and are never typed by hand.
 * Policy questions carry `gold_keywords`: a retrieved chunk counts as relevant if it contains ALL
-  of them. They encode *topics* the RBI directions are known to cover; they contain no invented
+  of them. They encode *topics* the RBI directions are known to cover; they contain no policy text of their own
   policy text. `reference` is null until a human reads the ingested documents and fills it in
   (`status: needs_review`); the eval reports how many are reviewed.
 * Intervention questions pick customers from the data by rule, then check *behaviour*: a proposal

@@ -16,7 +16,7 @@ _OVERRIDE: Retriever | None = None
 
 
 def set_retriever_override(r: Retriever | None) -> None:
-    """Evals point the policy tool at a throw-away store (e.g. the poisoned-document fixture)."""
+    """Point the policy tool at a specific Retriever, for example an isolated corpus used by an evaluation."""
     global _OVERRIDE
     _OVERRIDE = r
 

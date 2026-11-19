@@ -45,7 +45,7 @@ node seed.js
 cd ..
 ```
 
-This creates the `drishti.db` file with 1000 dummy customer profiles.
+This creates the `drishti.db` file with 1000 generated customer profiles.
 
 ### 3. Start the Backend Server
 

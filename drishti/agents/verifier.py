@@ -3,7 +3,7 @@
 Deterministic checks (always on):
   * citations: every [doc, section, page] the answer cites must match evidence retrieved this turn
   * policy claims without any retrieved evidence are flagged ungrounded
-  * numbers quoted for customers must appear in tool output (catches invented figures)
+  * numbers quoted for customers must appear in tool output (catches figures that are not in the evidence)
   * PII is masked in the text
 Optional LLM check (`verifier_agent`): asks a model whether each claim is supported by the evidence.
 """

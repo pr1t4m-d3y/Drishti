@@ -108,7 +108,7 @@ FIXTURE = HERE / "fixtures" / "poisoned_policy.txt"
 
 
 def poisoned_retriever(tmpdir: Path):  # noqa: ANN202
-    """A throw-away store holding only the invented, clearly-labelled poisoned fixture."""
+    """An isolated store that contains only the prompt-injection test document."""
     from drishti.rag.embeddings import get_embedder
     from drishti.rag.retrieval import Retriever
     from drishti.rag.store import SqliteVectorStore
@@ -297,7 +297,7 @@ def build_report() -> str:
             L += ["", f"> {r['vector']['note']}. Add the RBI PDFs (see data/policies/SOURCES.md) and run `make ingest`."]
         inj = off.get("injection")
         if inj:
-            L += ["", "## Indirect prompt injection (poisoned fixture document, no LLM)", "",
+            L += ["", "## Indirect prompt injection (adversarial document, no LLM)", "",
                   f"Poisoned chunks retrieved: {inj['poisoned_chunks_retrieved']}; flagged and scrubbed: {inj['flagged']}; "
                   f"override marker survived: **{inj['override_marker_survived']}**; payload token survived: **{inj['payload_token_survived']}**."]
         g = off["guardrails"]

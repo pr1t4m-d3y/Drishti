@@ -1,7 +1,7 @@
 """Endpoints that preserve the v1 dashboard API surface (`/api/...`), now backed by the real model.
 
-v1 returned a hand-written 0-100 risk score for 1,000 synthetic customers. Here `risk_score` is the
-calibrated default probability x 100 for 30,000 real records, so existing screens keep working.
+v1 returned a rule-based 0-100 risk score. Here `risk_score` is the calibrated default probability x 100
+for every customer in the database, so existing screens keep working.
 Differences, on purpose: no names / cities / income (the public dataset is anonymised), "transactions"
 are the six monthly statement lines, and POST /api/interventions records a *proposal* for human approval
 instead of marking something as "Sent".
