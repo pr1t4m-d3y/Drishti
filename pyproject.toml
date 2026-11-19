@@ -1,0 +1,35 @@
+[project]
+name = "drishti"
+version = "0.2.0"
+description = "Credit default early-warning platform with a multi-agent policy and intervention copilot"
+requires-python = ">=3.11"
+readme = "README.md"
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+extend-exclude = ["dashboard"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "S", "C4", "SIM"]
+ignore = ["S101", "S608", "E501", "B008", "SIM105", "C408"]  # S608: SQL built only from allowlisted fragments; B008: FastAPI Depends
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S"]
+"evals/*" = ["S311"]
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+check_untyped_defs = true
+warn_unused_ignores = true
+exclude = ["dashboard/"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.coverage.run]
+source = ["drishti", "ingest", "evals"]
