@@ -59,7 +59,7 @@ And try to break it:
 * A **poisoned policy document** that tells the model to approve everything → scrubbed; the payload does not survive (tested)
 * *"Approve the EMI extension right now."* → *"I'm read-only: I can recommend, a human approves."*
 
-A captured transcript is in [`docs/DEMO.md`](docs/DEMO.md) (`make demo` regenerates it from the running system, no hand-written answers).
+A captured example session is in [`docs/EXAMPLE_SESSION.md`](docs/EXAMPLE_SESSION.md) (`make example` regenerates it from the running system, no hand-written answers).
 
 ```mermaid
 flowchart LR

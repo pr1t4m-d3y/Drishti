@@ -30,7 +30,7 @@ export default defineConfig([
     },
   },
   {
-    // v1 Express + SQLite demo backend (CommonJS, Node globals)
+    // v1 Express + SQLite backend (CommonJS, Node globals)
     files: ['server/**/*.js'],
     extends: [js.configs.recommended],
     languageOptions: {
