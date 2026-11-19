@@ -1,4 +1,4 @@
-"""Coverage for the glue code: training, pipeline steps, draft references, demo, benchmark runner, PDF parsing."""
+"""Coverage for the glue code: training, pipeline steps, draft references, example session, benchmark runner, PDF parsing."""
 
 import json
 
@@ -163,14 +163,14 @@ def test_score_row_rules():
     assert ev.score_row({"category": "policy"}, ok)
 
 
-def test_demo_offline_transcript(tmp_path, monkeypatch):
-    import drishti.demo as demo
+def test_example_session_offline_transcript(tmp_path, monkeypatch):
+    import drishti.example_session as example
 
     (tmp_path / "docs").mkdir()
-    monkeypatch.setattr(demo, "ROOT", tmp_path)
-    monkeypatch.setattr(demo, "credential_mode", lambda: "offline")
-    out = demo.run()
-    assert "refused: True" in out and "No LLM credentials" in out and (tmp_path / "docs" / "DEMO.md").exists()
+    monkeypatch.setattr(example, "ROOT", tmp_path)
+    monkeypatch.setattr(example, "credential_mode", lambda: "offline")
+    out = example.run()
+    assert "refused: True" in out and "No LLM credentials" in out and (tmp_path / "docs" / "EXAMPLE_SESSION.md").exists()
 
 
 def test_benchmark_run_records_rows(tmp_path, monkeypatch):

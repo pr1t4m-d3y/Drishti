@@ -14,6 +14,7 @@ COPY --from=builder /wheels /wheels
 COPY requirements.txt .
 RUN pip install --no-cache-dir --no-index --find-links=/wheels -r requirements.txt
 COPY drishti ./drishti
+COPY models/incoming ./models/incoming
 RUN python -c "from drishti.ml.data import download_uci; download_uci()" && python -m drishti.ml.train > /dev/null
 
 # Stage 3: minimal runtime, non-root.

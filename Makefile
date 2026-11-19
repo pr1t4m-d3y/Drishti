@@ -1,4 +1,4 @@
-.PHONY: demo figures help doctor all drafts review smoke benchmark setup data train load ingest up api ui test lint typecheck eval eval-offline report deploy teardown
+.PHONY: example figures help doctor all drafts review smoke benchmark setup data train load ingest up api ui test lint typecheck eval eval-offline report deploy teardown
 PY ?= .venv/bin/python
 
 doctor:          ## what is set up, what is missing, and how to fix it
@@ -19,8 +19,8 @@ smoke:           ## smoke-test a deployed service: make smoke URL=https://... KE
 benchmark:       ## timed manual-vs-assisted review benchmark: make benchmark P=analyst1
 	$(PY) -m benchmarks.review_time run --participant $(P)
 
-demo:            ## capture a real demo transcript into docs/DEMO.md (full conversation needs LLM credentials)
-	$(PY) -m drishti.demo
+example:         ## capture a real example session into docs/EXAMPLE_SESSION.md (full conversation needs LLM credentials)
+	$(PY) -m drishti.example_session
 
 figures:         ## regenerate README figures from the real model and data
 	$(PY) -m drishti.ml.figures

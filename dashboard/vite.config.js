@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     proxy: {
-      // v1 pages: Express + SQLite demo backend (node server/index.js)
+      // v1 pages: Express + SQLite backend with synthetic data (node server/index.js)
       '/api': 'http://localhost:3001',
       // Copilot page: the Python FastAPI service (make api)
       '/copilot-api': {

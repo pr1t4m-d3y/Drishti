@@ -1,4 +1,4 @@
-"""Capture a real demo transcript into docs/DEMO.md:  python -m drishti.demo  (make demo)
+"""Capture a real example session into docs/EXAMPLE_SESSION.md:  python -m drishti.example_session  (make example)
 
 Everything in the output comes from the running system: no hand-written answers. Parts that need an LLM
 are included only when credentials exist; otherwise the file says they were not captured.
@@ -25,7 +25,7 @@ GUARDRAIL_ONLY = [QUESTIONS[4], QUESTIONS[5]]
 
 async def _ask(svc, question: str, sid: str | None):  # noqa: ANN001, ANN202
     final = None
-    async for ev in svc.chat("demo", question, sid):
+    async for ev in svc.chat("example-session", question, sid):
         final = ev if ev["type"] == "final" else final
     return final
 
@@ -44,14 +44,14 @@ def run() -> str:
         qs = [q.replace("{top}", str(top)) for q in GUARDRAIL_ONLY]
     svc, sid = ChatService(), None
     out = [
-        "# Demo transcript",
+        "# Example session",
         "",
-        f"_Captured {datetime.now(UTC).strftime('%Y-%m-%d %H:%M UTC')} by `python -m drishti.demo`. Credential mode: **{mode}**, model `{get_settings().llm_model}`._",
+        f"_Captured {datetime.now(UTC).strftime('%Y-%m-%d %H:%M UTC')} by `python -m drishti.example_session`. Credential mode: **{mode}**, model `{get_settings().llm_model}`._",
         "",
     ]
     if mode == "offline":
         out += ["> No LLM credentials were available, so only the deterministic guardrail turns are captured. "
-                "Add a key (see `secrets/README.md`) and run `make demo` to capture the full conversation.", ""]
+                "Add a key (see `secrets/README.md`) and run `make example` to capture the full conversation.", ""]
     for q in qs:
         r = asyncio.run(_ask(svc, q, sid))
         sid = r["session_id"]
@@ -63,7 +63,7 @@ def run() -> str:
             out.append(f"- source: {c.get('doc')}, {c.get('section')}, " + (f"para {c['paragraph']}" if c.get('paragraph') else f"p.{c.get('page')}"))
         out.append("")
     text_out = "\n".join(out)
-    (ROOT / "docs" / "DEMO.md").write_text(text_out)
+    (ROOT / "docs" / "EXAMPLE_SESSION.md").write_text(text_out)
     return text_out
 
 
