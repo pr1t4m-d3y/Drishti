@@ -41,3 +41,17 @@ If the Python / FastAPI / scikit-learn version exists, it is not in this repo or
 - Built a React + Express + SQLite risk-monitoring dashboard with customer deep-dive views, intervention logging and a rule-based risk score over **1,000 synthetic** customer profiles.
 
 Nothing about ML precision, 10,000 records, FastAPI, PostgreSQL, a 35% reduction or automatic execution is supported by this repo. The upgrade plan makes the first four true and measurable; the last two should be reworded as described above.
+
+---
+
+## Status after the upgrade (branch `feat/agentic-copilot`, local, not pushed)
+
+| # | Claim | Now | Evidence |
+|---|---|---|---|
+| 1 | Python, scikit-learn, FastAPI, PostgreSQL | **True in the code.** Python + scikit-learn + FastAPI run locally (SQLite). The Postgres/pgvector store is written but not yet run against a real Postgres. | `drishti/`, `requirements.txt`, `docker-compose.yml` |
+| 2 | 10,000+ records | **True**: 30,000 real public records loaded and scored | `models/metrics.json` → `data_quality.rows` |
+| 3 | Early-warning FastAPI service + Postgres schema | **True** (`/early-warning`, `/predict`); schema in SQLAlchemy models, Postgres untested | `drishti/api/main.py`, `drishti/db/models.py` |
+| 4 | 94%+ precision | **Not reproducible.** Measured on held-out data: precision 0.501 at recall 0.612 (max F1); 0.90 at recall 0.034 | `models/metrics.json` |
+| 5 | 35% faster review | **Still unmeasured.** Reword or run a timed benchmark | `RESUME_FACTS.md` |
+| 6 | Automatically executes restructuring | **Replaced** by human-approved, policy-cited recommendations (`proposed` / `approved` / `rejected`) | `drishti/agents/tools/intervention_tools.py`, `/interventions/{id}/decision` |
+| 7 | Admin dashboard, tailored action per customer | **Built** as a Streamlit console plus the Intervention agent; needs live Gemini and the policy PDFs to demonstrate end to end | `ui/streamlit_app.py` |
