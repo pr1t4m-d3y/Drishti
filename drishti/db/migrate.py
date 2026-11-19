@@ -53,7 +53,7 @@ def migrate(dsn: str | None = None, env: dict[str, str] | None = None) -> dict[s
                 done["skipped"].append(f"{path.name} (set {need})")
                 continue
             with conn.transaction():
-                conn.execute(render(sql, env))  # type: ignore[arg-type]
+                conn.execute(render(sql, env))
                 conn.execute("INSERT INTO schema_migrations (name) VALUES (%s)", (path.name,))
             done["applied"].append(path.name)
     return done

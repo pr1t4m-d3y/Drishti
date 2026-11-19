@@ -105,6 +105,16 @@ export default function Sidebar({ segment, stats, customers, selectedCustomer, o
                 </div>
             </div>
 
+            {/* AI Copilot */}
+            <div className="px-4 pb-2">
+                <button
+                    onClick={() => navigate('/copilot')}
+                    className="w-full text-xs font-semibold bg-oxford-blue text-white rounded-lg py-2.5 hover:bg-oxford-blue/90 transition-colors"
+                >
+                    Open AI Copilot →
+                </button>
+            </div>
+
             {/* Segment Switcher */}
             <div className="p-4 border-t border-slate-100">
                 <button
