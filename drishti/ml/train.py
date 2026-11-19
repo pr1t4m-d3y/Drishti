@@ -31,7 +31,9 @@ from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.frozen import FrozenEstimator
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
+    accuracy_score,
     average_precision_score,
+    balanced_accuracy_score,
     f1_score,
     precision_recall_curve,
     precision_score,
@@ -52,6 +54,8 @@ def _metrics(y, proba, thr: float) -> dict:
     pred = (proba >= thr).astype(int)
     return {
         "threshold": round(float(thr), 4),
+        "accuracy": round(float(accuracy_score(y, pred)), 4),
+        "balanced_accuracy": round(float(balanced_accuracy_score(y, pred)), 4),
         "precision": round(float(precision_score(y, pred, zero_division=0)), 4),
         "recall": round(float(recall_score(y, pred)), 4),
         "f1": round(float(f1_score(y, pred)), 4),
@@ -137,6 +141,7 @@ def package(base_model, name: str, sp: Splits, val_scores: dict[str, float] | No
         "split": {"train": len(sp.X_tr), "validation": len(sp.X_val), "test": len(sp.X_te), "seed": SEED},
         "train_test_duplicate_feature_rows": overlap,
         "test_base_rate": round(float(sp.y_te.mean()), 4),
+        "majority_class_accuracy": round(float(1 - sp.y_te.mean()), 4),  # accuracy of "nobody defaults"
         "validation_pr_auc_by_model": {k: round(v, 4) for k, v in val_scores.items()},
         "selected_model": name,
         "model_source": source,

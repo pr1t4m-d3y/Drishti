@@ -18,6 +18,8 @@ recommends the next step with the exact paragraph it relies on. A second human a
 
 ![model](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fpr1t4m-d3y%2FDrishti%2Fmain%2Fmodels%2Fmetrics.json&query=%24.selected_model&label=model&color=0b3d91)
 ![records](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fpr1t4m-d3y%2FDrishti%2Fmain%2Fmodels%2Fmetrics.json&query=%24.data_quality.rows&label=training%20records&color=0b3d91)
+![accuracy](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fpr1t4m-d3y%2FDrishti%2Fmain%2Fmodels%2Fmetrics.json&query=%24.test.at_max_f1_threshold.accuracy&label=test%20accuracy&color=2e7d32)
+![balanced accuracy](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fpr1t4m-d3y%2FDrishti%2Fmain%2Fmodels%2Fmetrics.json&query=%24.test.at_max_f1_threshold.balanced_accuracy&label=balanced%20accuracy&color=2e7d32)
 ![precision](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fpr1t4m-d3y%2FDrishti%2Fmain%2Fmodels%2Fmetrics.json&query=%24.test.at_max_f1_threshold.precision&label=test%20precision&color=2e7d32)
 ![recall](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fpr1t4m-d3y%2FDrishti%2Fmain%2Fmodels%2Fmetrics.json&query=%24.test.at_max_f1_threshold.recall&label=test%20recall&color=2e7d32)
 ![roc auc](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fpr1t4m-d3y%2FDrishti%2Fmain%2Fmodels%2Fmetrics.json&query=%24.test.at_max_f1_threshold.roc_auc&label=ROC-AUC&color=2e7d32)
