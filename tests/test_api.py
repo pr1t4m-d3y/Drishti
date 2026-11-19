@@ -96,3 +96,40 @@ def test_db_password_is_injected_into_postgres_urls(monkeypatch):
 
     s = Settings(database_url="postgresql+psycopg://u@/d?host=/cloudsql/x", db_password="p@ss/w", session_db_url="sqlite+aiosqlite:///x")
     assert ":p%40ss%2Fw@" in s.database_url and s.session_db_url.startswith("sqlite")
+
+
+def test_v1_compatible_endpoints(client, key):
+    s = client.get("/api/stats", headers=H(key)).json()
+    assert s["totalCustomers"] >= 6 and s["criticalCount"] >= 2 and s["safeCount"] >= 2
+    r = client.get("/api/customers?risk=CRITICAL&limit=5", headers=H(key)).json()
+    assert r["total"] >= 2 and r["customers"][0]["risk_score"] >= r["customers"][-1]["risk_score"]
+    assert client.get("/api/customers?risk=HIGH RISK", headers=H(key)).status_code == 200  # v1 label alias
+    assert client.get("/api/customers?filter=late_payments&limit=3", headers=H(key)).json()["total"] >= 3
+    assert client.get("/api/customers?search=abc", headers=H(key)).status_code == 422
+    t = client.get("/api/customers/1/transactions?months=3", headers=H(key)).json()
+    assert len(t) == 3 and {"bill_amount", "payment_amount", "repayment_status"} <= set(t[0])
+
+
+def test_v1_intervention_is_a_proposal_not_an_action(client, key):
+    r = client.post("/api/interventions", json={"customerId": 4, "action": "counselling referral"}, headers=H(key))
+    assert r.status_code == 200 and r.json()["status"] == "proposed"
+    assert client.post("/api/interventions", json={"customerId": 4, "action": "WRITE_OFF"}, headers=H(key)).status_code == 422
+    assert client.post("/api/interventions", json={"customerId": 999999, "action": "NO_ACTION"}, headers=H(key)).status_code == 404
+    hist = client.get("/api/customers/4/interventions", headers=H(key)).json()
+    assert any(h["action_type"] == "COUNSELLING_REFERRAL" for h in hist)
+
+
+def test_admin_model_and_metrics_endpoints(client, key):
+    assert client.get("/admin/metrics/recent", headers=H(key)).status_code == 200
+    assert client.get("/admin/metrics", headers=H(key)).json()["requests"] >= 0
+    assert client.get("/admin/model", headers=H(key)).status_code in (200, 404)
+
+
+def test_four_eyes_rule_blocks_self_approval(client, key):
+    r = client.post("/api/interventions", json={"customerId": 4, "action": "PAYMENT_REMINDER"}, headers=H(key))
+    iid = r.json()["id"]
+    assert r.json()["proposed_by"] == "tester" if "proposed_by" in r.json() else True
+    other = create_key("approver", "analyst")
+    assert client.post(f"/interventions/{iid}/decision", json={"decision": "approved"}, headers=H(key)).status_code == 403
+    ok = client.post(f"/interventions/{iid}/decision", json={"decision": "approved"}, headers=H(other))
+    assert ok.status_code == 200 and ok.json()["decided_by"] == "approver"

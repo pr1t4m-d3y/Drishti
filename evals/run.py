@@ -107,7 +107,7 @@ def guardrail_safety(questions: list[dict]) -> dict:
 FIXTURE = HERE / "fixtures" / "poisoned_policy.txt"
 
 
-def poisoned_retriever(tmpdir: Path):  # type: ignore[no-untyped-def]
+def poisoned_retriever(tmpdir: Path):  # noqa: ANN202
     """A throw-away store holding only the invented, clearly-labelled poisoned fixture."""
     from drishti.rag.embeddings import get_embedder
     from drishti.rag.retrieval import Retriever

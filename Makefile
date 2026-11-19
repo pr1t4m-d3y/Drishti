@@ -35,7 +35,7 @@ lint:            ## ruff
 	$(PY) -m ruff check .
 
 typecheck:       ## mypy
-	$(PY) -m mypy drishti ingest
+	$(PY) -m mypy drishti ingest evals
 
 eval-offline:    ## guardrails, retrieval and oracle checks. No cloud needed
 	$(PY) -m evals.run --offline --check

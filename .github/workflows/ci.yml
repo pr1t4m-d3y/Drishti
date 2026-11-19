@@ -16,7 +16,7 @@ jobs:
         with: {python-version: "3.12", cache: pip}
       - run: pip install -r requirements-dev.txt
       - run: ruff check .
-      - run: mypy drishti ingest
+      - run: mypy drishti ingest evals
       - run: pytest --cov=drishti --cov=ingest --cov=evals --cov-report=term
       - name: Build data + model for the eval smoke test
         run: |

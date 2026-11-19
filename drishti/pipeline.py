@@ -15,7 +15,7 @@ from drishti.bootstrap import credential_mode
 from drishti.config import get_settings
 
 
-def _step(name: str, fn, *, skip: str | None = None) -> str:  # type: ignore[no-untyped-def]
+def _step(name: str, fn, *, skip: str | None = None) -> str:
     if skip:
         print(f"-- {name}: SKIPPED ({skip})")
         return "skipped"

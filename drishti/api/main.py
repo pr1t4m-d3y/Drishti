@@ -18,6 +18,7 @@ from slowapi.util import get_remote_address
 from sqlalchemy import func, select
 
 from drishti.api.auth import Principal, require_admin, require_key
+from drishti.api.legacy import router as legacy_router
 from drishti.api.schemas import (
     ChatRequest,
     ChatResponse,
@@ -64,6 +65,7 @@ async def lifespan(_: FastAPI):
 
 app = FastAPI(title="Drishti", version="0.2.0", lifespan=lifespan)
 app.state.limiter = limiter
+app.include_router(legacy_router)
 FastAPIInstrumentor.instrument_app(app, excluded_urls="health")
 
 
@@ -138,16 +140,6 @@ def early_warning(
         ]
 
 
-@app.get("/api/stats")
-def stats(_: Principal = Depends(require_key)) -> dict:
-    with session_scope() as db:
-        rows = db.execute(
-            select(Customer.risk_segment, func.count(), func.avg(Customer.risk_proba)).group_by(Customer.risk_segment)
-        ).all()
-    return {"segments": {seg: {"customers": n, "avg_risk": round(float(avg), 4)} for seg, n, avg in rows},
-            "total": sum(n for _, n, _ in rows)}
-
-
 @app.get("/api/customers/{customer_id}")
 def customer(customer_id: int, _: Principal = Depends(require_key)) -> dict:
     with session_scope() as db:
@@ -180,6 +172,8 @@ def decide(intervention_id: int, body: DecisionRequest, who: Principal = Depends
             raise HTTPException(404, "intervention not found")
         if row.status != "proposed":
             raise HTTPException(409, f"already {row.status}")
+        if row.proposed_by == who.name:
+            raise HTTPException(403, "four-eyes rule: the proposer cannot decide their own recommendation")
         row.status, row.decided_by, row.decided_at, row.decision_note = (
             body.decision, who.name, datetime.now(UTC), body.note)
         db.flush()
@@ -214,6 +208,27 @@ async def get_session(session_id: str, who: Principal = Depends(require_key)) ->
     if not hist:
         raise HTTPException(404, "session not found")
     return {"session_id": session_id, "messages": hist}
+
+
+@app.get("/admin/model")
+def model_card(_: Principal = Depends(require_key)) -> dict:
+    """Held-out metrics written by `python -m drishti.ml.train`."""
+    path = get_settings().metrics_path
+    if not path.exists():
+        raise HTTPException(404, "model not trained yet")
+    return json.loads(path.read_text())
+
+
+@app.get("/admin/metrics/recent")
+def metrics_recent(limit: int = Query(100, ge=1, le=1000), _: Principal = Depends(require_admin)) -> list[dict]:
+    """Most recent per-request metrics (PII-free), oldest first, for charts."""
+    from drishti.db.models import RequestMetric
+
+    with session_scope() as db:
+        rows = db.scalars(select(RequestMetric).order_by(RequestMetric.id.desc()).limit(limit)).all()
+    keys = ("trace_id", "model", "latency_s", "input_tokens", "output_tokens", "tokens_per_sec", "cost_usd",
+            "agent_steps", "tool_calls", "retrieval_calls", "grounded", "guardrail")
+    return [{"created_at": r.created_at.isoformat(), **{k: r.payload.get(k) for k in keys}} for r in reversed(rows)]
 
 
 @app.get("/admin/metrics")
