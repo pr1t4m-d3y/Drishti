@@ -1,0 +1,47 @@
+[
+  {
+    "slug": "rbi_nbfc_responsible_business_conduct_2025",
+    "url": "https://rbi.org.in/Scripts/BS_ViewMasDirections.aspx?id=12942",
+    "title": "Reserve Bank of India (Non-Banking Financial Companies \u2013 Responsible Business Conduct) Directions, 2025 (Updated as on July 1, 2026)",
+    "fetched": "2026-11-19",
+    "characters": 60173,
+    "sha256": "c7b758931a015b3e",
+    "topics": "fair practices, penal charges, key fact statements, recovery agents, grievance redressal"
+  },
+  {
+    "slug": "rbi_nbfc_resolution_of_stressed_assets_2025",
+    "url": "https://rbi.org.in/Scripts/BS_ViewMasDirections.aspx?id=12947",
+    "title": "Reserve Bank of India (Non-Banking Financial Companies \u2013 Resolution of Stressed Assets) Directions, 2025 (updated as on October 1, 2026)",
+    "fetched": "2026-11-19",
+    "characters": 115045,
+    "sha256": "2e2c761d534df4ee",
+    "topics": "restructuring, resolution plans, early resolution, asset classification"
+  },
+  {
+    "slug": "rbi_nbfc_credit_cards_2025",
+    "url": "https://rbi.org.in/Scripts/BS_ViewMasDirections.aspx?id=12956",
+    "title": "Reserve Bank of India (Non-Banking Financial Companies \u2013 Credit Cards: Issuance and Conduct) Directions, 2025",
+    "fetched": "2026-11-19",
+    "characters": 62379,
+    "sha256": "726c7a788b580af2",
+    "topics": "credit card issuance, billing, interest, dues, customer protection"
+  },
+  {
+    "slug": "rbi_banks_resolution_of_stressed_assets_2025",
+    "url": "https://rbi.org.in/Scripts/BS_ViewMasDirections.aspx?id=13145",
+    "title": "Reserve Bank of India (Commercial Banks \u2013 Resolution of Stressed Assets) Directions, 2025 (Updated as on October 1, 2026)",
+    "fetched": "2026-11-19",
+    "characters": 97872,
+    "sha256": "e6c267696350b8c5",
+    "topics": "restructuring and resolution for commercial banks"
+  },
+  {
+    "slug": "rbi_banks_credit_debit_cards_2025",
+    "url": "https://rbi.org.in/Scripts/BS_ViewMasDirections.aspx?id=13155",
+    "title": "Reserve Bank of India (Commercial Banks \u2013 Credit Cards and Debit Cards: Issuance and Conduct) Directions, 2025 (Updated as on October 1, 2026)",
+    "fetched": "2026-11-19",
+    "characters": 65888,
+    "sha256": "89a97e5d2c37d33e",
+    "topics": "card issuance, billing, interest, recovery conduct for commercial banks"
+  }
+]

@@ -48,5 +48,17 @@ def parse_pdf(path: Path) -> tuple[str, list[Page]]:
 
 
 def parse_text(path: Path) -> tuple[str, list[Page]]:
-    """Plain-text input (used for tests and for documents that were saved as .txt)."""
-    return path.stem.replace("_", " "), [Page(1, clean_page_text(path.read_text(encoding="utf-8")))]
+    """Plain text. Files written by `ingest fetch` start with `# Key: value` provenance lines (title, source URL,
+    "no pagination"); those become the title and are not indexed. Web text has no page numbers: page 0."""
+    raw = path.read_text(encoding="utf-8")
+    meta: dict[str, str] = {}
+    body: list[str] = []
+    for ln in raw.split("\n"):
+        m = re.match(r"^#\s*(\w+):\s*(.*)$", ln) if not body else None
+        if m:
+            meta[m.group(1).lower()] = m.group(2).strip()
+        else:
+            body.append(ln)
+    paginated = "no pagination" not in meta.get("format", "")
+    title = meta.get("title") or path.stem.replace("_", " ")
+    return title, [Page(1 if paginated else 0, clean_page_text("\n".join(body)))]

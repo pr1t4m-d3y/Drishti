@@ -1,6 +1,7 @@
 """Ingestion CLI.
 
     python -m ingest run            # parse -> chunk -> embed -> store (idempotent)
+    python -m ingest fetch          # download the RBI corpus (real, public) into data/policies/
     python -m ingest run --reset    # drop and rebuild every document
     python -m ingest stats          # what is in the store
 
@@ -68,8 +69,13 @@ def main() -> None:
     r = sub.add_parser("run")
     r.add_argument("--reset", action="store_true")
     sub.add_parser("stats")
+    sub.add_parser("fetch", help="download the RBI policy corpus into data/policies/")
     args = ap.parse_args()
-    if args.cmd == "run":
+    if args.cmd == "fetch":
+        from ingest.fetch import run as fetch_run
+
+        fetch_run()
+    elif args.cmd == "run":
         print(json.dumps(run(reset=args.reset), indent=2))
     else:
         print(json.dumps(get_store().stats(), indent=2))

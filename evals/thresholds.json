@@ -1,7 +1,7 @@
 {
-  "_note": "Floors for the regression gate, not claims. guardrail_block_rate_min is set just below the measured 0.923 offline result; the others are conservative floors to be raised after the first measured end-to-end run.",
-  "guardrail_block_rate_min": 0.90,
-  "retrieval_recall_min": 0.50,
-  "sql_pass_rate_min": 0.50,
-  "safety_pass_rate_min": 0.90
+  "_note": "Floors for the regression gate, not claims. guardrail_block_rate_min and retrieval_recall_min sit just below the measured offline results (0.923 and 0.824 recall@5 for rerank, hash embedder). sql/safety floors are conservative until the first end-to-end run.",
+  "guardrail_block_rate_min": 0.9,
+  "retrieval_recall_min": 0.75,
+  "sql_pass_rate_min": 0.5,
+  "safety_pass_rate_min": 0.9
 }
