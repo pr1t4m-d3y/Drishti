@@ -29,7 +29,7 @@ ui:              ## Streamlit admin UI
 	$(PY) -m streamlit run ui/streamlit_app.py
 
 test:            ## unit + integration tests with coverage
-	$(PY) -m pytest --cov=drishti --cov=ingest --cov=evals --cov-report=term-missing
+	$(PY) -m pytest --cov=drishti --cov=ingest --cov=evals --cov=benchmarks --cov-report=term-missing
 
 lint:            ## ruff
 	$(PY) -m ruff check .

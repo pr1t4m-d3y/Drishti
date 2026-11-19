@@ -17,6 +17,7 @@ ignore = ["S101", "S608", "E501", "B008", "SIM105", "C408"]  # S608: SQL built o
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S"]
 "evals/*" = ["S311"]
+"benchmarks/*" = ["S311"]
 
 [tool.mypy]
 python_version = "3.11"
@@ -32,4 +33,4 @@ asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 
 [tool.coverage.run]
-source = ["drishti", "ingest", "evals"]
+source = ["drishti", "ingest", "evals", "benchmarks"]

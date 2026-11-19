@@ -17,7 +17,7 @@ jobs:
       - run: pip install -r requirements-dev.txt
       - run: ruff check .
       - run: mypy drishti ingest evals
-      - run: pytest --cov=drishti --cov=ingest --cov=evals --cov-report=term
+      - run: pytest --cov=drishti --cov=ingest --cov=evals --cov=benchmarks --cov-report=term
       - name: Build data + model for the eval smoke test
         run: |
           make data train load PY=python

@@ -10,6 +10,7 @@ from __future__ import annotations
 import os
 
 import httpx
+import pandas as pd
 import streamlit as st
 
 API = os.getenv("DRISHTI_API_URL", "http://localhost:8000")
@@ -43,7 +44,7 @@ with st.sidebar:
         if st.button(ex, key=ex):
             st.session_state["pending"] = ex
 
-chat_tab, approvals_tab = st.tabs(["Copilot", "Pending approvals"])
+overview_tab, chat_tab, approvals_tab, metrics_tab = st.tabs(["Risk overview", "Copilot", "Pending approvals", "LLM metrics"])
 
 with chat_tab:
     st.session_state.setdefault("messages", [])
@@ -96,3 +97,54 @@ with approvals_tab:
                 if b.button("Reject", key=f"r{it['id']}"):
                     client.post(f"/interventions/{it['id']}/decision", json={"decision": "rejected", "note": note})
                     st.rerun()
+
+
+with overview_tab:
+    st.subheader("Portfolio risk")
+    r = client.get("/api/stats")
+    if r.status_code == 200:
+        stats = r.json()
+        c = st.columns(4)
+        c[0].metric("Customers", f"{stats['totalCustomers']:,}")
+        c[1].metric("Critical", f"{stats['criticalCount']:,}")
+        c[2].metric("High + critical", f"{stats['highRiskCount']:,}")
+        c[3].metric("Avg utilisation", f"{stats['avgCreditUtil']}%")
+        order = ["CRITICAL", "HIGH", "MEDIUM", "LOW"]
+        st.bar_chart(pd.Series({k: stats["segments"].get(k, 0) for k in order}, name="customers"))
+        seg = st.selectbox("Early-warning list", order, index=0)
+        ew = client.get("/early-warning", params={"segment": seg, "limit": 25}).json()
+        if isinstance(ew, list) and ew:
+            df = pd.DataFrame([
+                {"customer": e["customer_id"], "risk": round(e["risk_proba"], 3), "delinquent months": e["n_delinquent_months"],
+                 "top drivers (SHAP)": ", ".join(f["label"] for f in e["top_risk_factors"])}
+                for e in ew
+            ])
+            st.dataframe(df, use_container_width=True, hide_index=True)
+    else:
+        st.warning(f"Could not load stats ({r.status_code}). Is DRISHTI_API_KEY set?")
+    mc = client.get("/admin/model")
+    if mc.status_code == 200:
+        m = mc.json()
+        st.subheader("Model card (held-out test set)")
+        t = m["test"]["at_max_f1_threshold"]
+        st.write(f"{m['selected_model']} on {m['split']['test']:,} unseen customers: "
+                 f"precision {t['precision']:.3f}, recall {t['recall']:.3f}, F1 {t['f1']:.3f}, ROC-AUC {t['roc_auc']:.3f}.")
+        st.caption("Precision depends on the threshold: see the strict operating point in models/metrics.json.")
+
+with metrics_tab:
+    st.subheader("Per-request LLM metrics")
+    summ = client.get("/admin/metrics")
+    rec = client.get("/admin/metrics/recent", params={"limit": 200})
+    if summ.status_code == 200 and rec.status_code == 200 and rec.json():
+        sm = summ.json()
+        c = st.columns(4)
+        c[0].metric("Requests", sm["requests"])
+        c[1].metric("Latency p50 / p95", f"{sm['latency_p50_s']}s / {sm['latency_p95_s']}s")
+        c[2].metric("Tokens/sec (p50)", sm["tokens_per_sec_p50"] or "n/a")
+        c[3].metric("Mean cost/request", "n/a" if sm["cost_usd_mean"] is None else f"${sm['cost_usd_mean']:.5f}")
+        df = pd.DataFrame(rec.json())
+        st.line_chart(df.set_index("created_at")[["latency_s"]])
+        st.bar_chart(df.set_index("created_at")[["input_tokens", "output_tokens"]])
+        st.dataframe(df, use_container_width=True, hide_index=True)
+    else:
+        st.info("No requests recorded yet, or the key lacks the admin role (create one with `python -m drishti.api.auth me admin`).")
