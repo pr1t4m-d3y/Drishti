@@ -12,9 +12,22 @@ from drishti.rag.retrieval import Mode, Retriever
 RETRIEVAL_MODE: Mode = "rerank"
 
 
+_OVERRIDE: Retriever | None = None
+
+
+def set_retriever_override(r: Retriever | None) -> None:
+    """Evals point the policy tool at a throw-away store (e.g. the poisoned-document fixture)."""
+    global _OVERRIDE
+    _OVERRIDE = r
+
+
 @lru_cache
-def _retriever() -> Retriever:
+def _default_retriever() -> Retriever:
     return Retriever()
+
+
+def _retriever() -> Retriever:
+    return _OVERRIDE or _default_retriever()
 
 
 def set_retrieval_mode(mode: Mode) -> None:
@@ -23,7 +36,7 @@ def set_retrieval_mode(mode: Mode) -> None:
 
 
 def reset_retriever() -> None:
-    _retriever.cache_clear()
+    _default_retriever.cache_clear()
 
 
 def search_policies(query: str, top_k: int = 5) -> dict[str, Any]:

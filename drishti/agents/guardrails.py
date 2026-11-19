@@ -27,6 +27,8 @@ _INJECTION = [
     r"(?:^|\n)\s*(system|assistant)\s*:",
     r"<\s*/?\s*(system|instructions?)\s*>",
     r"do not (tell|inform|mention to) the (user|admin|analyst)",
+    r"(reply|respond|answer|output) with (only )?(the )?(exact )?(word|phrase|string) \S+",
+    r"approve (every|all|any) .{0,60}(without|skipping|bypass\w*) (human )?(review|approval)",
     r"(execute|run|call) (the )?(tool|function|query) .{0,40}(delete|drop|update|insert|truncate)",
 ]
 _PII_EXTRACTION = [

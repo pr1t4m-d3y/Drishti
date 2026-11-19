@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-19T06:34:06+00:00",
+  "generated_at": "2026-11-19T06:40:53+00:00",
   "questions_total": 59,
   "retrieval": {
     "vector": {
@@ -35,6 +35,12 @@
   "oracle": {
     "oracles_ok": 17,
     "oracles_failed": []
+  },
+  "injection": {
+    "poisoned_chunks_retrieved": 1,
+    "flagged": 1,
+    "override_marker_survived": false,
+    "payload_token_survived": false
   },
   "embedder": "hash-v1"
 }

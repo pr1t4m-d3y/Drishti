@@ -62,3 +62,13 @@ def test_verifier_flags_unsupported_number_and_citation():
 
 def test_verifier_masks_pii():
     assert "[EMAIL]" in verify("contact a@b.co", Evidence()).answer
+
+
+def test_poisoned_fixture_is_fully_neutralised():
+    from pathlib import Path
+
+    txt = (Path(__file__).parent.parent / "evals" / "fixtures" / "poisoned_policy.txt").read_text()
+    safe, flags = g.scan_untrusted_text(txt)
+    assert len(flags) >= 3
+    assert "PWNED-7731" not in safe and "IGNORE ALL PREVIOUS" not in safe.upper()
+    assert "grievance officer" in safe  # legitimate text is preserved
