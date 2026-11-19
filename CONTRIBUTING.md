@@ -1,6 +1,6 @@
 # Working on Drishti together
 
-Current status and pending items: [docs/STATUS.md](docs/STATUS.md).
+Current status and pending items: [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Split of work
 
