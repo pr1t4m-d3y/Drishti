@@ -1,0 +1,40 @@
+name: deploy (Cloud Run via Terraform)
+# Manual. One-time setup: create a Workload Identity Federation pool for this repo and set repository
+# variables GCP_PROJECT_ID, GCP_REGION, GCP_WIF_PROVIDER, GCP_DEPLOYER_SA. No keys are stored in GitHub.
+on:
+  workflow_dispatch:
+    inputs:
+      invoker: {description: "IAM member allowed to call the service, e.g. user:you@example.com", required: true}
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+      REGION: ${{ vars.GCP_REGION }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOYER_SA }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - uses: hashicorp/setup-terraform@v3
+      - name: Registry
+        working-directory: deploy/terraform
+        run: |
+          terraform init
+          terraform apply -auto-approve -target=google_artifact_registry_repository.images -var project_id=$PROJECT_ID -var region=$REGION -var image=placeholder
+      - name: Build image
+        run: gcloud builds submit --tag "$REGION-docker.pkg.dev/$PROJECT_ID/drishti/drishti-api:${GITHUB_SHA::7}" .
+      - name: Apply
+        working-directory: deploy/terraform
+        run: |
+          terraform apply -auto-approve -var project_id=$PROJECT_ID -var region=$REGION \
+            -var image=$REGION-docker.pkg.dev/$PROJECT_ID/drishti/drishti-api:${GITHUB_SHA::7} \
+            -var 'invoker_members=["${{ inputs.invoker }}"]'
+      - name: Show URL
+        working-directory: deploy/terraform
+        run: terraform output service_url

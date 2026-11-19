@@ -7,3 +7,4 @@ pre-commit==4.7.0
 pytest-asyncio==1.5.0
 python-hcl2==8.2.0
 sqlglot==30.33.0
+shellcheck-py==0.11.0.1
