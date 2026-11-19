@@ -1,0 +1,13 @@
+.venv
+.git
+dashboard
+data/raw
+*.sqlite
+__pycache__
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.env
+htmlcov
+tests
+docs

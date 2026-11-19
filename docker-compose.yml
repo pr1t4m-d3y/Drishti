@@ -1,0 +1,36 @@
+# Local stack: Postgres + pgvector, the API, and the Streamlit admin UI.
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: drishti
+      POSTGRES_PASSWORD: drishti_local_only
+      POSTGRES_DB: drishti
+    ports: ["5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U drishti"]
+      interval: 5s
+      retries: 10
+  api:
+    build: .
+    depends_on:
+      db: {condition: service_healthy}
+    environment:
+      DATABASE_URL: postgresql+psycopg://drishti:drishti_local_only@db:5432/drishti
+      SESSION_DB_URL: postgresql+asyncpg://drishti:drishti_local_only@db:5432/drishti
+      TRACE_EXPORTER: console
+      EMBEDDING_BACKEND: ${EMBEDDING_BACKEND:-hash}
+      GOOGLE_GENAI_USE_VERTEXAI: "true"
+      GOOGLE_CLOUD_PROJECT: ${GOOGLE_CLOUD_PROJECT:-}
+      GOOGLE_CLOUD_LOCATION: ${GOOGLE_CLOUD_LOCATION:-}
+    ports: ["8000:8080"]
+  ui:
+    build: .
+    command: ["streamlit", "run", "ui/streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+    environment:
+      DRISHTI_API_URL: http://api:8080
+      DRISHTI_API_KEY: ${DRISHTI_API_KEY:-}
+    ports: ["8501:8501"]
+volumes:
+  pgdata:

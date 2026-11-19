@@ -1,0 +1,7 @@
+# Keep GitHub language statistics focused on the code
+data/** linguist-documentation
+docs/** linguist-documentation
+*.lock linguist-generated
+dashboard/package-lock.json linguist-generated
+evals/golden_set.jsonl linguist-generated
+evals/results/** linguist-generated

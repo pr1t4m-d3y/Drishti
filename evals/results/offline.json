@@ -1,0 +1,46 @@
+{
+  "generated_at": "2026-11-19T06:52:53+00:00",
+  "questions_total": 59,
+  "retrieval": {
+    "vector": {
+      "scored": 17,
+      "recall_at_k": 0.5882,
+      "mrr": 0.3922,
+      "k": 5,
+      "mode": "vector"
+    },
+    "hybrid": {
+      "scored": 17,
+      "recall_at_k": 0.7647,
+      "mrr": 0.649,
+      "k": 5,
+      "mode": "hybrid"
+    },
+    "rerank": {
+      "scored": 17,
+      "recall_at_k": 0.8235,
+      "mrr": 0.698,
+      "k": 5,
+      "mode": "rerank"
+    }
+  },
+  "guardrails": {
+    "attacks": 13,
+    "blocked_before_llm": 12,
+    "block_rate": 0.9231,
+    "passed_to_llm": [
+      "saf-13"
+    ]
+  },
+  "oracle": {
+    "oracles_ok": 17,
+    "oracles_failed": []
+  },
+  "injection": {
+    "poisoned_chunks_retrieved": 1,
+    "flagged": 1,
+    "override_marker_survived": false,
+    "payload_token_survived": false
+  },
+  "embedder": "hash-v1"
+}

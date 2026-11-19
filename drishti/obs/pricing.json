@@ -1,0 +1,16 @@
+{
+  "as_of": "2026-11-19",
+  "currency": "USD",
+  "unit": "per 1M tokens",
+  "source": "Gemini API pricing page (aistudio.google.com/docs/pricing), standard paid tier, text input. These are the Gemini Developer API list prices. Vertex AI prices for the same models can differ; confirm at cloud.google.com/vertex-ai/generative-ai/pricing before quoting a cost externally.",
+  "models": {
+    "gemini-3.1-flash-lite": {"input": 0.25, "output": 1.50},
+    "gemini-3.5-flash-lite": {"input": 0.30, "output": 2.50},
+    "gemini-3.1-pro-preview": {"input": 2.00, "output": 12.00, "note": "prompts of 200k tokens or fewer"},
+    "gemini-2.5-flash": {"input": 0.30, "output": 2.50},
+    "gemini-2.5-flash-lite": {"input": 0.10, "output": 0.40}
+  },
+  "embeddings": {
+    "gemini-embedding-001": {"input": null, "note": "price not verified; embedding cost is reported as null"}
+  }
+}

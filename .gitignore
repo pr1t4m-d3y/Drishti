@@ -1,28 +1,78 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
+# ---------- OS / editors ----------
+.DS_Store
+Thumbs.db
+.idea/
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-New_Server/
+
+# ---------- secrets (never commit) ----------
+.env
+.env.*
+!.env.example
+secrets/*
+!secrets/README.md
+!secrets/.gitkeep
+*.pem
+*.key
+*service-account*.json
+*credentials*.json
+
+# ---------- Python ----------
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# ---------- local data, models and databases ----------
+*.sqlite
+*.sqlite3
 *.db
 *.db-shm
 *.db-wal
+data/raw/
+data/processed/
+data/policies/.ingest_manifest.json
+models/*.joblib
+benchmarks/results/timings.csv
+
+# ---------- Terraform ----------
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!example.tfvars
+crash.log
+.terraform.tfstate.lock.info
+
+# ---------- Node / React dashboard ----------
+node_modules/
+dashboard/dist/
+dist/
+dist-ssr/
+*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---------- logs ----------
+logs/
+*.log
+
+# ---------- AI tooling / local-only ----------
+.claude/
+New_Server/
