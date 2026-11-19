@@ -67,7 +67,8 @@ def propose_intervention(
         ch = store.get(cid)
         if ch is None:
             return {"error": f"unknown chunk_id '{cid}'. Cite only chunk_ids from search_policies."}
-        citations.append({"doc": ch.doc_title, "section": ch.section, "page": ch.page, "chunk_id": cid})
+        citations.append({"doc": ch.doc_title, "section": ch.section, "paragraph": ch.clause or None,
+                          "page": ch.page or None, "chunk_id": cid})
     with session_scope() as db:
         if db.scalar(select(Customer.customer_id).where(Customer.customer_id == customer_id)) is None:
             return {"error": f"customer {customer_id} not found"}

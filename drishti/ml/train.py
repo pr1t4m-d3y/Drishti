@@ -24,6 +24,7 @@ from datetime import UTC, datetime
 
 import joblib
 import numpy as np
+import pandas as pd
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.frozen import FrozenEstimator
@@ -71,9 +72,8 @@ def _pick_threshold(y, proba, min_precision: float | None = None) -> float:
     return float(t[ok[int(np.argmax(r[ok]))]])
 
 
-def main() -> int:
-    s = get_settings()
-    raw = load_raw()
+def fit_and_evaluate(raw: pd.DataFrame) -> tuple[dict, dict]:
+    """Train + evaluate on a raw UCI-schema frame. Returns (artifact, report). No files are written."""
     quality = data_quality_report(raw)
     df = add_features(raw)
     X, y = df[FEATURES], df[TARGET].to_numpy()
@@ -129,12 +129,16 @@ def main() -> int:
             "Test set was used once, after model selection, calibration and thresholding.",
         ],
     }
+    artifact = {"model": calibrated, "base_model": candidates[best_name], "features": FEATURES,
+                "explainer": _fit_explainer(X_tr, y_tr)}
+    return artifact, report
+
+
+def main() -> int:
+    s = get_settings()
+    artifact, report = fit_and_evaluate(load_raw())
     s.model_path.parent.mkdir(parents=True, exist_ok=True)
-    joblib.dump(
-        {"model": calibrated, "base_model": candidates[best_name], "features": FEATURES,
-         "explainer": _fit_explainer(X_tr, y_tr)},
-        s.model_path,
-    )
+    joblib.dump(artifact, s.model_path)
     s.metrics_path.write_text(json.dumps(report, indent=2))
     print(json.dumps(report, indent=2))
     return 0

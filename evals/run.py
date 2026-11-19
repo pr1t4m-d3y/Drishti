@@ -290,6 +290,9 @@ def build_report() -> str:
         for mode in ("vector", "hybrid", "rerank"):
             m = r.get(mode, {})
             L.append(f"| {mode} | {m.get('scored')} | {_fmt(m.get('recall_at_k'))} | {_fmt(m.get('mrr'))} |")
+        L += ["", f"Embedder: `{off.get('embedder')}`. A chunk counts as relevant when it contains all `gold_keywords` of the question "
+              "(topic keywords in `evals/golden_set.jsonl`). With the offline hash embedder and lexical reranker these numbers are a "
+              "floor; re-run with Vertex/Gemini embeddings and the Gemini reranker (`make all` with credentials) for the production configuration."]
         if r.get("vector", {}).get("note"):
             L += ["", f"> {r['vector']['note']}. Add the RBI PDFs (see data/policies/SOURCES.md) and run `make ingest`."]
         inj = off.get("injection")

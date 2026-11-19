@@ -20,6 +20,10 @@ st.set_page_config(page_title="Drishti copilot", page_icon="👁", layout="wide"
 st.title("Drishti: credit-risk copilot")
 st.caption("Recommendations only. Every action requires human approval; nothing is executed automatically.")
 
+def _where(c: dict) -> str:
+    return f"para {c['paragraph']}" if c.get("paragraph") else f"p.{c.get('page')}"
+
+
 headers = {"X-API-Key": KEY}
 client = httpx.Client(base_url=API, headers=headers, timeout=120)
 
@@ -63,7 +67,7 @@ with chat_tab:
                 if meta.get("citations"):
                     with st.expander(f"Sources ({len(meta['citations'])})"):
                         for c in meta["citations"]:
-                            st.markdown(f"- **{c.get('doc')}**, {c.get('section')}, p.{c.get('page')}")
+                            st.markdown(f"- **{c.get('doc')}**, {c.get('section')}, {_where(c)}")
 
     prompt = st.chat_input("Ask about risk, policy or an intervention") or st.session_state.pop("pending", None)
     if prompt:
@@ -88,7 +92,7 @@ with approvals_tab:
                 st.markdown(f"**Customer {it['customer_id']}**: {it['action_type']}")
                 st.write(it["rationale"])
                 for c in it["citations"]:
-                    st.caption(f"{c.get('doc')}, {c.get('section')}, p.{c.get('page')}")
+                    st.caption(f"{c.get('doc')}, {c.get('section')}, {_where(c)}")
                 note = st.text_input("Decision note", key=f"n{it['id']}")
                 a, b = st.columns(2)
                 if a.button("Approve", key=f"a{it['id']}"):

@@ -15,6 +15,7 @@ class ChatRequest(BaseModel):
 class Citation(BaseModel):
     doc: str | None = None
     section: str | None = None
+    paragraph: str | None = None
     page: int | None = None
     chunk_id: str | None = None
 

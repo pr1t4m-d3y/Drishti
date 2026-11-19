@@ -68,7 +68,7 @@ def verify(answer: str, evidence: Evidence) -> VerificationResult:
         if match is None:
             issues.append(f"citation not found in retrieved evidence: [{c}]")
         else:
-            citations.append({k: match.get(k) for k in ("doc", "section", "page", "chunk_id")})
+            citations.append({k: match.get(k) for k in ("doc", "section", "paragraph", "page", "chunk_id")})
     if _POLICY_WORDS.search(answer) and not evidence.passages and not cites:
         issues.append("policy statement made without any retrieved policy evidence")
     if evidence.tool_json:

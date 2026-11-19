@@ -88,7 +88,7 @@ export default function Copilot() {
                         <div key={p.id} className="card p-3 border border-slate-100 mb-2 text-xs">
                             <p className="font-semibold text-oxford-blue">Customer {p.customer_id}: {p.action_type}</p>
                             <p className="mt-1">{p.rationale}</p>
-                            {p.citations.map((c) => <p key={c.chunk_id} className="text-[11px] text-slate-grey mt-1">{c.doc}, {c.section}, p.{c.page}</p>)}
+                            {p.citations.map((c) => <p key={c.chunk_id} className="text-[11px] text-slate-grey mt-1">{c.doc}, {c.section}, {c.paragraph ? `para ${c.paragraph}` : `p.${c.page}`}</p>)}
                             <div className="flex gap-2 mt-2">
                                 <button onClick={() => act(p.id, 'approved')} className="flex items-center gap-1 px-2 py-1 rounded bg-risk-safe text-white"><Check className="w-3 h-3" />Approve</button>
                                 <button onClick={() => act(p.id, 'rejected')} className="flex items-center gap-1 px-2 py-1 rounded border border-risk-critical text-risk-critical"><X className="w-3 h-3" />Reject</button>
@@ -110,7 +110,7 @@ export default function Copilot() {
                                     <p>trace <code>{m.meta.trace_id}</code> · grounded: {String(m.meta.grounded)} ·
                                         {' '}{m.meta.metrics.latency_s}s · {m.meta.metrics.input_tokens}/{m.meta.metrics.output_tokens} tokens ·
                                         {' '}{m.meta.metrics.cost_usd == null ? 'cost n/a' : `$${m.meta.metrics.cost_usd}`} · {m.meta.metrics.agent_steps} steps</p>
-                                    {m.meta.citations.map((c) => <p key={c.chunk_id}>Source: {c.doc}, {c.section}, p.{c.page}</p>)}
+                                    {m.meta.citations.map((c) => <p key={c.chunk_id}>Source: {c.doc}, {c.section}, {c.paragraph ? `para ${c.paragraph}` : `p.${c.page}`}</p>)}
                                 </div>
                             )}
                         </motion.div>

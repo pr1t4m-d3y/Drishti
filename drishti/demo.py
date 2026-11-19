@@ -60,7 +60,7 @@ def run() -> str:
                 f"`trace {r['trace_id']}` · refused: {r['refused']} · grounded: {r.get('grounded')} · latency {m['latency_s']}s · "
                 f"tokens in/out {m['input_tokens']}/{m['output_tokens']} · cost {m['cost_usd']} · steps {m['agent_steps']}", ""]
         for c in r.get("citations", []):
-            out.append(f"- source: {c.get('doc')}, {c.get('section')}, p.{c.get('page')}")
+            out.append(f"- source: {c.get('doc')}, {c.get('section')}, " + (f"para {c['paragraph']}" if c.get('paragraph') else f"p.{c.get('page')}"))
         out.append("")
     text_out = "\n".join(out)
     (ROOT / "docs" / "DEMO.md").write_text(text_out)

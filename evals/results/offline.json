@@ -1,27 +1,27 @@
 {
-  "generated_at": "2026-11-19T06:40:53+00:00",
+  "generated_at": "2026-11-19T06:52:53+00:00",
   "questions_total": 59,
   "retrieval": {
     "vector": {
-      "scored": 0,
-      "recall_at_k": null,
-      "mrr": null,
+      "scored": 17,
+      "recall_at_k": 0.5882,
+      "mrr": 0.3922,
       "k": 5,
-      "note": "policy corpus is empty"
+      "mode": "vector"
     },
     "hybrid": {
-      "scored": 0,
-      "recall_at_k": null,
-      "mrr": null,
+      "scored": 17,
+      "recall_at_k": 0.7647,
+      "mrr": 0.649,
       "k": 5,
-      "note": "policy corpus is empty"
+      "mode": "hybrid"
     },
     "rerank": {
-      "scored": 0,
-      "recall_at_k": null,
-      "mrr": null,
+      "scored": 17,
+      "recall_at_k": 0.8235,
+      "mrr": 0.698,
       "k": 5,
-      "note": "policy corpus is empty"
+      "mode": "rerank"
     }
   },
   "guardrails": {
