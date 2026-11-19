@@ -38,6 +38,12 @@ def get_readonly_engine() -> Engine:
 
 
 def init_db() -> None:
+    """SQLite: create tables from the ORM models. PostgreSQL: apply the versioned SQL migrations."""
+    if get_settings().database_url.startswith("postgresql"):
+        from drishti.db.migrate import migrate
+
+        migrate()
+        return
     Base.metadata.create_all(get_engine())
 
 

@@ -25,7 +25,7 @@ python -m drishti.api.auth my-analyst admin     # prints the key once; only its 
 Call it with an identity token: `curl -H "Authorization: Bearer $(gcloud auth print-identity-token)" -H "X-API-Key: $KEY" $URL/health`.
 For browser users put Identity-Aware Proxy in front and set `DRISHTI_AUTH=iam`.
 
-Postgres read-only role for the agents: `psql -f drishti/db/ro_role.sql -v ro_password=...`, then set `READONLY_DATABASE_URL`.
+Postgres read-only role for the agents: `psql -f migrations/003_readonly_role.sql -v ro_password=...`, then set `READONLY_DATABASE_URL`.
 
 ## Teardown
 ```bash

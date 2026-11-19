@@ -6,7 +6,17 @@ WORKDIR /build
 COPY requirements.txt .
 RUN pip wheel --wheel-dir /wheels -r requirements.txt
 
-# Stage 2: minimal runtime, non-root.
+# Stage 2: train the model inside the build so the image is self-contained (public dataset, ~5 MB download).
+FROM python:3.12-slim AS model
+ENV PYTHONUNBUFFERED=1
+WORKDIR /app
+COPY --from=builder /wheels /wheels
+COPY requirements.txt .
+RUN pip install --no-cache-dir --no-index --find-links=/wheels -r requirements.txt
+COPY drishti ./drishti
+RUN python -c "from drishti.ml.data import download_uci; download_uci()" && python -m drishti.ml.train > /dev/null
+
+# Stage 3: minimal runtime, non-root.
 FROM python:3.12-slim
 ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 PORT=8080
 RUN useradd --create-home --uid 10001 drishti
@@ -16,7 +26,11 @@ RUN pip install --no-cache-dir --no-index --find-links=/wheels /wheels/* && rm -
 COPY --chown=drishti:drishti drishti ./drishti
 COPY --chown=drishti:drishti ingest ./ingest
 COPY --chown=drishti:drishti evals ./evals
-COPY --chown=drishti:drishti models ./models
+COPY --chown=drishti:drishti migrations ./migrations
+COPY --chown=drishti:drishti benchmarks ./benchmarks
+COPY --chown=drishti:drishti ui ./ui
+COPY --from=model --chown=drishti:drishti /app/models ./models
+COPY --from=model --chown=drishti:drishti /app/data/raw ./data/raw
 COPY --chown=drishti:drishti data/policies ./data/policies
 USER drishti
 EXPOSE 8080

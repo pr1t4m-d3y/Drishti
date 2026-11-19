@@ -18,7 +18,7 @@ Only things that were actually measured or counted are listed. Dates are when th
 | Automated tests | **66 passing**, line coverage **73%** over `drishti/`, `ingest/`, `evals/` | `make test` |
 | Static checks | `ruff` clean, `mypy` clean on 35 source files | `make lint typecheck` |
 | Agents and tools | 4 LLM agents (orchestrator + risk-data, policy, intervention specialists) + a verifier stage (deterministic, plus an optional LLM verifier agent); 9 function tools (6 data, 1 policy search, 2 intervention) | `drishti/agents/system.py`, `drishti/agents/tools/` |
-| Read-only data access | Agent SQL runs through 7 named, parameterised queries on a read-only connection; the ground-truth label column is never selectable | `tests/test_sql_allowlist.py`, `drishti/db/ro_role.sql` |
+| Read-only data access | Agent SQL runs through 7 named, parameterised queries on a read-only connection; the ground-truth label column is never selectable | `tests/test_sql_allowlist.py`, `migrations/003_readonly_role.sql` |
 | Human-in-the-loop | The only write tool inserts `proposed` interventions; approval needs an authenticated decision endpoint | `tests/test_intervention_tools.py`, `tests/test_api.py` |
 | Python code size | ~3,900 lines across `drishti/`, `ingest/`, `evals/`, `ui/`, `tests/` | `find drishti ingest evals ui tests -name '*.py' \| xargs wc -l` |
 

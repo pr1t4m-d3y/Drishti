@@ -6,6 +6,8 @@ SERVICE=${SERVICE:-drishti-api}; REPO=${REPO:-drishti}; SQL_INSTANCE=${SQL_INSTA
 read -r -p "Delete Cloud Run service, Cloud SQL instance (and its data), secrets, registry and service account in $PROJECT_ID? [type yes] " a
 [[ "$a" == "yes" ]] || { echo aborted; exit 1; }
 gcloud config set project "$PROJECT_ID"
+gcloud run jobs delete drishti-bootstrap --region "$REGION" --quiet || true
+gcloud run jobs delete drishti-apikey --region "$REGION" --quiet || true
 gcloud run services delete "$SERVICE" --region "$REGION" --quiet || true
 gcloud sql instances delete "$SQL_INSTANCE" --quiet || true
 gcloud secrets delete drishti-db-password --quiet || true

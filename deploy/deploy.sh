@@ -55,6 +55,17 @@ gcloud run deploy "$SERVICE" --image "$IMAGE" --region "$REGION" --service-accou
   --set-env-vars "^@^DATABASE_URL=postgresql+psycopg://drishti@/drishti?host=/cloudsql/${CONN}@SESSION_DB_URL=postgresql+asyncpg://drishti@/drishti?host=/cloudsql/${CONN}"
 # The URLs carry no password: the app injects DB_PASSWORD (from Secret Manager) at startup.
 
+echo "== one-off bootstrap job: migrations, load 30k customers, ingest policy PDFs baked into the image"
+COMMON=(--image "$IMAGE" --region "$REGION" --service-account "$SA" --set-cloudsql-instances "$CONN"
+  --set-env-vars "^@^GOOGLE_GENAI_USE_VERTEXAI=true@GOOGLE_CLOUD_PROJECT=${PROJECT_ID}@GOOGLE_CLOUD_LOCATION=${REGION}@EMBEDDING_BACKEND=vertex@DATABASE_URL=postgresql+psycopg://drishti@/drishti?host=/cloudsql/${CONN}@SESSION_DB_URL=postgresql+asyncpg://drishti@/drishti?host=/cloudsql/${CONN}"
+  --set-secrets "API_KEY_PEPPER=drishti-api-pepper:latest,DB_PASSWORD=drishti-db-password:latest")
+gcloud run jobs deploy drishti-bootstrap "${COMMON[@]}" --command python --args "-m,drishti.pipeline,--no-eval" --max-retries 0 --task-timeout 1800
+gcloud run jobs execute drishti-bootstrap --region "$REGION" --wait
+
+echo "== first API key (printed once in the job log; store it in your password manager)"
+gcloud run jobs deploy drishti-apikey "${COMMON[@]}" --command python --args "-m,drishti.api.auth,admin-$(date +%s),admin" --max-retries 0
+gcloud run jobs execute drishti-apikey --region "$REGION" --wait
+
 if [[ -n "${BILLING_ACCOUNT:-}" ]]; then
   echo "== budget alert (USD ${BUDGET_USD:-20}, alerts at 50/90/100%)"
   gcloud billing budgets create --billing-account "$BILLING_ACCOUNT" --display-name "drishti-budget" \

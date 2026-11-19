@@ -1,5 +1,23 @@
-.PHONY: help setup data train load ingest up api ui test lint typecheck eval eval-offline report deploy teardown
+.PHONY: help doctor all drafts review smoke benchmark setup data train load ingest up api ui test lint typecheck eval eval-offline report deploy teardown
 PY ?= .venv/bin/python
+
+doctor:          ## what is set up, what is missing, and how to fix it
+	$(PY) -m drishti.doctor --ping
+
+all:             ## data -> train -> load -> ingest -> evals -> report (skips what lacks credentials/PDFs, says so)
+	$(PY) -m drishti.pipeline
+
+drafts:          ## draft reference answers for policy questions FROM the ingested PDFs (human review required)
+	$(PY) -m evals.draft_references
+
+review:          ## list policy-question review status
+	$(PY) -m evals.draft_references --list
+
+smoke:           ## smoke-test a deployed service: make smoke URL=https://... KEY=dk_...
+	bash scripts/smoke_test.sh $(URL) $(KEY)
+
+benchmark:       ## timed manual-vs-assisted review benchmark: make benchmark P=analyst1
+	$(PY) -m benchmarks.review_time run --participant $(P)
 
 help:            ## list targets
 	@grep -E '^[a-z-]+:.*##' Makefile | sed 's/:.*##/\t/'

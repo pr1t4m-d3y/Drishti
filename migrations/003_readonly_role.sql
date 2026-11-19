@@ -1,7 +1,11 @@
--- PostgreSQL: least-privilege role used by the agents' SQL tools.
--- Run once as an admin after the schema exists. Password comes from Secret Manager.
--- The agent role can read only the columns it needs: `default_label` (ground truth) is excluded.
-CREATE ROLE drishti_ro LOGIN PASSWORD :'ro_password' NOSUPERUSER NOCREATEDB NOCREATEROLE;
+-- requires: READONLY_PASSWORD
+-- Least-privilege role for the agents' SQL tools. `default_label` (ground truth) is deliberately NOT granted.
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'drishti_ro') THEN
+        CREATE ROLE drishti_ro LOGIN PASSWORD '{{READONLY_PASSWORD}}' NOSUPERUSER NOCREATEDB NOCREATEROLE;
+    END IF;
+END $$;
 REVOKE ALL ON ALL TABLES IN SCHEMA public FROM drishti_ro;
 GRANT USAGE ON SCHEMA public TO drishti_ro;
 GRANT SELECT (
