@@ -130,7 +130,11 @@ def main() -> int:
         ],
     }
     s.model_path.parent.mkdir(parents=True, exist_ok=True)
-    joblib.dump({"model": calibrated, "features": FEATURES, "explainer": _fit_explainer(X_tr, y_tr)}, s.model_path)
+    joblib.dump(
+        {"model": calibrated, "base_model": candidates[best_name], "features": FEATURES,
+         "explainer": _fit_explainer(X_tr, y_tr)},
+        s.model_path,
+    )
     s.metrics_path.write_text(json.dumps(report, indent=2))
     print(json.dumps(report, indent=2))
     return 0

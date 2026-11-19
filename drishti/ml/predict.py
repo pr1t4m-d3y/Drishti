@@ -22,6 +22,10 @@ LABELS = {
     "limit_bal": "credit limit",
     "repay_ratio": "share of billed amount repaid",
     "recent_delay_trend": "recent vs older delay trend",
+    **{f"pay_{i}": f"repayment status {i} month(s) ago" for i in range(4, 7)},
+    **{f"pay_amt{i}": f"payment made {i} month(s) ago" for i in range(1, 7)},
+    **{f"bill_amt{i}": f"bill amount {i} month(s) ago" for i in range(1, 7)},
+    "age": "age",
 }
 
 
@@ -55,14 +59,31 @@ def score_frame(raw: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def _top_factors(art: dict, X: pd.DataFrame, k: int = 3) -> list[list[dict]]:
-    """Per-customer drivers: logistic coefficient x standardised value (explainer model).
+def _shap_contributions(art: dict, X: pd.DataFrame) -> np.ndarray | None:
+    """Exact TreeSHAP values (log-odds) for the *selected* model. None if SHAP is unavailable.
 
-    This explains the *linear surrogate*, not the gradient-boosted scorer. Documented as such.
+    Calibration is a monotonic map applied after the base model, so the features that push the raw score
+    up are the same ones that push the calibrated probability up.
     """
-    pipe = art["explainer"]
-    scaler, lr = pipe.steps[0][1], pipe.steps[-1][1]
-    contrib = scaler.transform(X) * lr.coef_[0]
+    try:
+        import shap
+
+        base = art.get("base_model")
+        if base is None:
+            return None
+        values = shap.TreeExplainer(base).shap_values(X)
+        values = np.asarray(values[1] if isinstance(values, list) else values)
+        return values[..., 1] if values.ndim == 3 else values
+    except Exception:  # noqa: BLE001 - explanations must never break scoring
+        return None
+
+
+def _top_factors(art: dict, X: pd.DataFrame, k: int = 3) -> list[list[dict]]:
+    """Per-customer drivers: SHAP values of the real model, falling back to a logistic surrogate."""
+    contrib = _shap_contributions(art, X)
+    if contrib is None:  # fallback: coefficient x standardised value of the linear surrogate
+        pipe = art["explainer"]
+        contrib = pipe.steps[0][1].transform(X) * pipe.steps[-1][1].coef_[0]
     names = list(art["features"])
     out = []
     for row in contrib:
