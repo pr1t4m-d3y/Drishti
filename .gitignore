@@ -44,3 +44,8 @@ data/raw/
 data/processed/
 *.sqlite
 *.sqlite3
+
+# drop-in secrets (README stays)
+secrets/*
+!secrets/README.md
+!secrets/.gitkeep

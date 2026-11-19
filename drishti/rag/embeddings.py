@@ -82,8 +82,17 @@ class VertexEmbedder:
         return self._embed([text], "RETRIEVAL_QUERY")[0]
 
 
+def resolved_backend() -> str:
+    from drishti.bootstrap import credential_mode
+
+    s = get_settings()
+    if s.embedding_backend == "auto":
+        return "vertex" if credential_mode() != "offline" else "hash"
+    return s.embedding_backend
+
+
 def get_embedder() -> Embedder:
     s = get_settings()
-    if s.embedding_backend == "vertex":
+    if resolved_backend() == "vertex":
         return VertexEmbedder(s.embedding_model, s.embedding_dim)
     return HashEmbedder(s.embedding_dim)

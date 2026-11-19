@@ -24,6 +24,21 @@ PAYAMT_COLS = [f"pay_amt{i}" for i in range(1, 7)]
 BASE_FEATURES = ["limit_bal", "sex", "education", "marriage", "age", *PAY_COLS, *BILL_COLS, *PAYAMT_COLS]
 
 
+def download_uci(dest: Path | None = None) -> Path:
+    """Fetch and unzip the public dataset (about 5 MB). No-op if already present."""
+    import io
+    import urllib.request
+    import zipfile
+
+    dest = dest or RAW_XLS.parent
+    dest.mkdir(parents=True, exist_ok=True)
+    if RAW_XLS.exists():
+        return RAW_XLS
+    with urllib.request.urlopen(UCI_URL, timeout=120) as resp:  # noqa: S310 - fixed https URL
+        zipfile.ZipFile(io.BytesIO(resp.read())).extractall(dest)
+    return RAW_XLS
+
+
 def load_raw(path: Path = RAW_XLS) -> pd.DataFrame:
     """Load and rename the raw UCI sheet. Raises a helpful error if it was not downloaded."""
     if not path.exists():

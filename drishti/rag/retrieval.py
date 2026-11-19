@@ -93,6 +93,17 @@ class GeminiReranker:
         return sorted(scored, key=lambda x: -x[1])
 
 
+def get_reranker() -> Reranker:
+    from drishti.bootstrap import credential_mode
+    from drishti.config import get_settings
+
+    s = get_settings()
+    choice = s.reranker
+    if choice == "auto":
+        choice = "gemini" if credential_mode() != "offline" else "lexical"
+    return GeminiReranker(s.judge_model) if choice == "gemini" else LexicalReranker()
+
+
 class Retriever:
     def __init__(
         self,
@@ -102,7 +113,7 @@ class Retriever:
     ):
         self.store = store or get_store()
         self.embedder = embedder or get_embedder()
-        self.reranker = reranker or LexicalReranker()
+        self.reranker = reranker or get_reranker()
         self._bm25: BM25Okapi | None = None
         self._chunks: list[Chunk] = []
 
@@ -127,6 +138,17 @@ class Retriever:
         return [(self._chunks[i], float(scores[i])) for i in top if scores[i] > 0]
 
     def search(self, query: str, k: int = 5, mode: Mode = "rerank", candidates: int = 20) -> list[Hit]:
+        from drishti.obs.tracing import tracer
+
+        with tracer().start_as_current_span("retrieval.search") as span:
+            span.set_attribute("retrieval.mode", mode)
+            span.set_attribute("retrieval.k", k)
+            hits = self._search(query, k, mode, candidates)
+            span.set_attribute("retrieval.hits", len(hits))
+            span.set_attribute("retrieval.reranker", type(self.reranker).__name__ if mode == "rerank" else "none")
+            return hits
+
+    def _search(self, query: str, k: int, mode: Mode, candidates: int) -> list[Hit]:
         if mode == "vector":
             return [Hit(c, s, i + 1, "vector") for i, (c, s) in enumerate(self._vector(query, k))]
 

@@ -33,6 +33,8 @@ def run(policies_dir: Path | None = None, reset: bool = False) -> dict:
     store, embedder = get_store(), get_embedder()
     manifest_path = policies_dir / ".ingest_manifest.json"
     manifest = {} if reset or not manifest_path.exists() else json.loads(manifest_path.read_text())
+    if manifest.get("_embedder") != embedder.name:  # vectors from a different model are not comparable
+        manifest = {}
 
     files = sorted(p for p in policies_dir.glob("*") if p.suffix.lower() in SUPPORTED)
     report: dict = {"files_found": len(files), "ingested": [], "skipped_unchanged": [], "chunks_written": 0}
@@ -53,6 +55,7 @@ def run(policies_dir: Path | None = None, reset: bool = False) -> dict:
         report["chunks_written"] += store.upsert(chunks)
         report["ingested"].append({"file": path.name, "chunks": len(chunks), "pages": len(pages)})
         manifest[path.name] = digest
+    manifest["_embedder"] = embedder.name
     manifest_path.write_text(json.dumps(manifest, indent=2))
     report["store"] = store.stats()
     report["embedder"] = embedder.name

@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(env_file=(".env", "secrets/.env"), extra="ignore")
 
     drishti_env: str = "local"
     database_url: str = f"sqlite:///{ROOT / 'drishti.sqlite'}"
@@ -25,7 +25,8 @@ class Settings(BaseSettings):
     llm_model: str = "gemini-3.1-flash-lite"
     judge_model: str = "gemini-3.1-flash-lite"
     embedding_model: str = "gemini-embedding-001"
-    embedding_backend: str = "hash"  # "hash" (offline, deterministic) | "vertex"
+    embedding_backend: str = "auto"  # auto (vertex if credentials found, else hash) | hash | vertex
+    reranker: str = "auto"  # auto (gemini if credentials found, else lexical) | lexical | gemini
     embedding_dim: int = 768
 
     trace_exporter: str = "console"  # console | otlp | gcp | none
@@ -57,4 +58,7 @@ class Settings(BaseSettings):
 
 @lru_cache
 def get_settings() -> Settings:
+    from drishti.bootstrap import bootstrap
+
+    bootstrap()
     return Settings()

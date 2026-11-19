@@ -31,6 +31,7 @@ from drishti.config import get_settings
 from drishti.db.models import Customer, Intervention
 from drishti.db.session import init_db, session_scope
 from drishti.ml.predict import score_frame
+from drishti.obs.logging import setup_logging
 from drishti.obs.tracing import current_trace_id, setup_tracing
 
 log = logging.getLogger("drishti.api")
@@ -55,6 +56,7 @@ def chat_service():
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    setup_logging()
     setup_tracing()
     init_db()
     yield

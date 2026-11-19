@@ -11,6 +11,7 @@ os.environ.update(
     DATABASE_URL=f"sqlite:///{_TMP / 'test.sqlite'}",
     SESSION_DB_URL=f"sqlite+aiosqlite:///{_TMP / 'sessions.sqlite'}",
     EMBEDDING_BACKEND="hash",
+    RERANKER="lexical",
     EMBEDDING_DIM="256",
     TRACE_EXPORTER="none",
     API_KEY_PEPPER="test-pepper",
