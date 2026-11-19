@@ -11,7 +11,6 @@ const GAMBLING_MERCHANTS = ['Dream11', 'MPL', 'WinZO', 'Parimatch', 'Stake.com']
 const LENDING_APPS = ['KreditBee', 'MoneyTap', 'EarlySalary', 'CASHe', 'Navi'];
 const CATEGORIES = ['Shopping', 'Food & Dining', 'Utilities', 'Transport', 'Entertainment', 'Healthcare', 'Education', 'Groceries', 'Lifestyle', 'Travel'];
 const INVESTMENT_TYPES = ['Gold', 'Silver', 'ETFs', 'Mutual Funds', 'Fixed Deposits', 'PPF', 'Stocks'];
-const MODES = ['UPI', 'CC', 'DC', 'NEFT', 'IMPS'];
 
 function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 function pick(arr) { return arr[rand(0, arr.length - 1)]; }

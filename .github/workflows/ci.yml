@@ -54,10 +54,10 @@ jobs:
       - name: Container starts as non-root and answers /health
         run: |
           test "$(docker run --rm --entrypoint id drishti:ci -u)" != "0"
-          docker run -d --name d -p 8080:8080 -e TRACE_EXPORTER=none drishti:ci
+          docker run -d --name drishti-ci -p 8080:8080 -e TRACE_EXPORTER=none drishti:ci
           for i in $(seq 1 30); do curl -fsS localhost:8080/health && break; sleep 2; done
           curl -fsS localhost:8080/health | grep '"status":"ok"'
-          docker logs d | tail -5
+          docker logs drishti-ci | tail -5
       - name: Image size
         run: docker image ls drishti:ci --format '{{.Size}}'
 

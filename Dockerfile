@@ -18,7 +18,8 @@ RUN python -c "from drishti.ml.data import download_uci; download_uci()" && pyth
 
 # Stage 3: minimal runtime, non-root.
 FROM python:3.12-slim
-ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 PORT=8080
+ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 PORT=8080 \
+    DATABASE_URL=sqlite:////tmp/drishti.sqlite SESSION_DB_URL=sqlite+aiosqlite:////tmp/sessions.sqlite
 RUN useradd --create-home --uid 10001 drishti
 WORKDIR /app
 COPY --from=builder /wheels /wheels
