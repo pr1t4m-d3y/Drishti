@@ -48,10 +48,10 @@ Nothing about ML precision, 10,000 records, FastAPI, PostgreSQL, a 35% reduction
 
 | # | Claim | Now | Evidence |
 |---|---|---|---|
-| 1 | Python, scikit-learn, FastAPI, PostgreSQL | **True in the code.** Python + scikit-learn + FastAPI run locally (SQLite). The Postgres/pgvector store is written but not yet run against a real Postgres. | `drishti/`, `requirements.txt`, `docker-compose.yml` |
+| 1 | Python, scikit-learn, FastAPI, PostgreSQL | **True.** Python + scikit-learn + FastAPI run locally on SQLite; PostgreSQL schema (`migrations/`) and the pgvector store are exercised against a real Postgres by the GitHub Actions `postgres` job. | `drishti/`, `requirements.txt`, `docker-compose.yml` |
 | 2 | 10,000+ records | **True**: 30,000 real public records loaded and scored | `models/metrics.json` → `data_quality.rows` |
 | 3 | Early-warning FastAPI service + Postgres schema | **True** (`/early-warning`, `/predict`); schema in SQLAlchemy models, Postgres untested | `drishti/api/main.py`, `drishti/db/models.py` |
 | 4 | 94%+ precision | **Not reproducible.** Measured on held-out data: precision 0.501 at recall 0.612 (max F1); 0.90 at recall 0.034 | `models/metrics.json` |
 | 5 | 35% faster review | **Still unmeasured.** Reword or run a timed benchmark | `RESUME_FACTS.md` |
 | 6 | Automatically executes restructuring | **Replaced** by human-approved, policy-cited recommendations (`proposed` / `approved` / `rejected`) | `drishti/agents/tools/intervention_tools.py`, `/interventions/{id}/decision` |
-| 7 | Admin dashboard, tailored action per customer | **Built** as a Streamlit console plus the Intervention agent; needs live Gemini and the policy PDFs to demonstrate end to end | `ui/streamlit_app.py` |
+| 7 | Admin dashboard, tailored action per customer | **Built**: Streamlit console, a React Copilot page and the Intervention agent over a real RBI corpus (5 directions, 810 chunks). Live answers need an LLM key. | `ui/streamlit_app.py` |

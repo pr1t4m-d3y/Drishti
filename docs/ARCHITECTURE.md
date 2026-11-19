@@ -102,10 +102,18 @@ flowchart LR
 * **Tracing**: ADK emits spans for agents, model calls and tools. We add a `chat.request` root span and HTTP instrumentation. Exporters: console (local), OTLP (Jaeger), Cloud Trace (`TRACE_EXPORTER=gcp`). A masking exporter scrubs PII in span attributes before export.
 * **Metrics** per request: input/output tokens, tokens/sec (output tokens / time spent in LLM calls), latency, cost from `drishti/obs/pricing.json` (dated, with its source), agent steps, tool calls, retrieval calls. `GET /admin/metrics` reports p50/p95.
 
+## Operations
+
+* **Schema**: PostgreSQL schema lives in versioned SQL (`migrations/`, applied by `python -m drishti.db.migrate`); a test parses the SQL and fails if it drifts from the ORM models. The four-eyes rule and action/status enums are also enforced as database constraints.
+* **Infrastructure**: `deploy/terraform/` declares Cloud Run (private), Cloud SQL, Secret Manager, Artifact Registry, a least-privilege service account and a budget alert. `deploy/deploy.sh` does the same with gcloud and also runs bootstrap jobs (migrate, load customers, ingest, first API key).
+* **Credentials**: a drop-in `secrets/` folder (Gemini API key or service-account JSON) is auto-detected (`drishti/bootstrap.py`); the same code path uses Application Default Credentials on Cloud Run.
+* **CI/CD**: PR checks (lint, types, tests, offline eval, pgvector integration on a Postgres service, Docker build + health, `terraform validate`, shellcheck, React lint + build); manual **eval** and **deploy** workflows.
+
 ## Known limitations
 
 * The ML model scores a public card-default dataset (Taiwan, 2005), not a bank's portfolio. Its precision is far lower than a headline "94%": see `models/metrics.json`.
 * Customer-level `risk_proba` for the 30,000 loaded rows includes rows the model was trained on, so ranking demos are in-sample. Evaluation metrics use the held-out test split only.
-* `explain` uses a logistic surrogate, not the gradient-boosted scorer.
-* Cloud deployment scripts and the pgvector store have not been run against a live project/instance yet.
-* No RBI PDFs are in the repository until you add them (`data/policies/SOURCES.md`).
+* SHAP values explain the raw (pre-calibration) score of the selected tree model. Calibration is monotonic, so the direction of each driver is unchanged, but magnitudes are in log-odds.
+* The retrieval relevance metric is keyword-based (a proxy). The production embedder and reranker (Gemini) have not been measured until an LLM key is supplied.
+* Corpus documents are web text without page numbers, so citations use chapter / topic / paragraph. PDFs, when added, carry page numbers.
+* The pgvector store, migrations, Docker image and Terraform are verified by CI on GitHub rather than on the author's laptop (no Docker or Postgres was installed locally).
