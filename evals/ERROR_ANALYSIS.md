@@ -29,6 +29,10 @@
 * LLM-as-judge scores are unmeasured.
 * Hash embeddings and the lexical reranker (offline) are a weak baseline; retrieval numbers must be re-measured with Gemini embeddings + the Gemini reranker. Relevance in the retrieval metric is a keyword proxy, not human judgement.
 
+## Known retrieval miss (found by manual probing, offline configuration)
+
+* Query "what counts as restructuring of a borrower in financial difficulty": the top results are the *Special Cases of Restructuring* chapters (sale-and-leaseback, refinancing), not the definition of "restructuring" in the Definitions section. Likely causes: the hash embedder cannot match paraphrases, and the definition sits as a numbered sub-item inside a long definitions paragraph. Expected to improve with Gemini embeddings + reranker; to be re-checked after the first end-to-end run, and if it persists, add sub-item-level chunking for definitions.
+
 ## How this file will be updated
 
 After `make eval`: group failures from `evals/results/final.json` `rows[].passed == false` into categories (wrong tool, wrong number, missing citation, over-refusal, under-refusal, hallucinated policy), record the change made for each, and list the remainder here.
